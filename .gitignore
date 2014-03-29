@@ -8,3 +8,16 @@
 *.sym
 *.lss
 .DS_Store
+cmake/*
+gtest/*
+CMakeFiles/*
+catkin/*
+catkin_generated/*
+build/*
+bin/*
+ros_lib_old/*
+*.cmake
+devel/*
+gtest/*
+test_results/*
+
