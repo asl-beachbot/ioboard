@@ -129,7 +129,7 @@ uint8_t temp_ADCH = 0;
 uint8_t last_controlled_motor = 2; // 2 = left, 3 = rigth
 
 ISR(ADC_vect) {
-  ADCSRA |= (1 << ADSC);
+//  ADCSRA |= (1 << ADSC);
 //  while(bit_is_set(ADCSRA, ADSC));
   temp_ADCL = ADCL;
   temp_ADCH = ADCH;
@@ -137,13 +137,13 @@ ISR(ADC_vect) {
   //bswap
   //out_msg.velocity = __builtin_bswap16(out_msg.velocity);
   switch (ADMUX) {
-    case 0x97:
-      ADMUX = 0x98;
+    case 0xC0:
+      ADMUX = 0xC1;
       out_msg.status = 0x02;
       break;
-    case 0x98:
-      out_msg.status = 0x98;
-      ADMUX = 0x97;
+    case 0xC1:
+      out_msg.status = 0x03;
+      ADMUX = 0xC0;
       break;
     default:
       break;

@@ -28,9 +28,9 @@ class Atmega32u4Hardware {
 
       // Init Registers
       ADCSRA |= (1<<ADPS2);
-      ADMUX  |= (1<<REFS1);
+//      ADMUX  |= (1<<REFS1);
       ADMUX  |= (1<<REFS0);
-      ADCSRA = 0;
+ //     ADCSRA = 0;
       ADCSRA |= 1<<ADIE;
       ADCSRA |= 1<<ADEN;
 
