@@ -1,8 +1,9 @@
-#include "ros.h"
-#include "std_msgs/String.h"
+#include "IOBoardRos.h"
+#include "Atmega32u4Hardware.h"
+
 #include "io_to_board.h"
 #include "io_from_board.h"
-#include "Atmega32u4Hardware.h"
+
 #define puls_oben 1200
 #define puls_unten 1600
 
@@ -22,11 +23,7 @@ void __cxa_pure_virtual(void) {}
 
 ros::NodeHandle nh;
 
-// std_msgs::String info_msg;
-
 io_from_board out_msg;
-
-// typedef io_to_board IOMessageToBoard;
 
 ros::Publisher io_board_out("io_from_board", &out_msg);
 // ros::Publisher io_board_info("io_info", &info_msg);
@@ -37,46 +34,37 @@ bool cb(0);
 
 void ioboard_cb(const io_to_board& io)
 {
-  if (io.rake_flags != servoMaske)
+  if ( (io.rake_flags | 0x80) != servoMaske)
   {
     servoMaske = (io.rake_flags | 0x80);
     cli();
 
-    PORTD |= ~servoMaske;                // alle 0 in io.rake_flags stehen für ein gehobenes Rechenteil
-    _delay_us(puls_oben);
-    PORTD &= servoMaske;
-    _delay_us(20000 - puls_oben);
-    PORTD |= ~servoMaske;
-    _delay_us(puls_oben);
-    PORTD &= servoMaske;
-    _delay_us(20000 - puls_oben);
-    PORTD |= ~servoMaske;
-    _delay_us(puls_oben);
-    PORTD &= servoMaske;
-    _delay_us(20000 - puls_oben);
-    PORTD |= ~servoMaske; 
-    _delay_us(puls_oben);
-    PORTD &= servoMaske;
+    PORTD |= 0x7F;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
+    _delay_us(1200);
+    PORTD &= servoMaske;                    // Die PWM-Ausgänge aller Servos, welche oben bleiben sollen, auf 0 setzen
+    _delay_us(400);
+    PORTD &= 0x80;                          // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
+    _delay_us(18400);
 
-    sei();
-    servoMaske = (io.rake_flags & 0x7F);        // oberstes Bit von PORTD darf hier nicht geändert werden
-    cli();
+    PORTD |= 0x7F;
+    _delay_us(1200);
+    PORTD &= servoMaske;
+    _delay_us(400);
+    PORTD &= 0x80;
+    _delay_us(18400);
 
-    PORTD |= servoMaske;                    // alle 1 in io.rake_flags stehen für ein gesenktes Rechenteil
-    _delay_us(puls_unten);
-    PORTD &= ~servoMaske;
-    _delay_us(20000 - puls_unten);
-    PORTD |= servoMaske;
-    _delay_us(puls_unten);
-    PORTD &= ~servoMaske;
-    _delay_us(20000 - puls_unten);
-    PORTD |= servoMaske;
-    _delay_us(puls_unten);
-    PORTD &= ~servoMaske;
-    _delay_us(20000 - puls_unten);
-    PORTD |= servoMaske;
-    _delay_us(puls_unten);
-    PORTD &= ~servoMaske;
+    PORTD |= 0x7F;
+    _delay_us(1200);
+    PORTD &= servoMaske;
+    _delay_us(400);
+    PORTD &= 0x80;
+    _delay_us(18400);
+
+    PORTD |= 0x7F; 
+    _delay_us(1200);
+    PORTD &= servoMaske;
+    _delay_us(400);
+    PORTD &= 0x80;
 
     sei();
   }
@@ -137,13 +125,13 @@ ISR(ADC_vect) {
   //bswap
   //out_msg.velocity = __builtin_bswap16(out_msg.velocity);
   switch (ADMUX) {
-    case 0xC0:
-      ADMUX = 0xC1;
+    case 0x40:
+      ADMUX = 0x41;
       out_msg.status = 0x02;
       break;
-    case 0xC1:
+    case 0x41:
       out_msg.status = 0x03;
-      ADMUX = 0xC0;
+      ADMUX = 0x40;
       break;
     default:
       break;
