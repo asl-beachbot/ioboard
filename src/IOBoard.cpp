@@ -164,7 +164,7 @@ int main()
   {
     i++;
     // Send the message every second
-    if(avr_time_now() - lasttime > 10)
+    if(avr_time_now() - lasttime > 2)
     {
       io_board_out.publish(&out_msg);
 
