@@ -46,7 +46,7 @@ class io_to_board : public ros::Msg
     return offset;
   }
 
-  const char * getType(){ return "rosserial_avr_tutorial/io_to_board"; };
+  const char * getType(){ return "ioboard/IOToBoard"; };
   const char * getMD5(){ return "fd582db80d94d37c6883d648da94dd93"; };
 
 };
