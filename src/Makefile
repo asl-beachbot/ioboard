@@ -108,7 +108,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = avr_chatter
+TARGET = IOBoard
 
 
 # Object files directory

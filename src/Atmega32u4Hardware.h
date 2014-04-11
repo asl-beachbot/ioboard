@@ -26,17 +26,14 @@ class Atmega32u4Hardware {
       DDRD = 0xFF;            // Use all D Pins for digital output
       PORTD = 0x00;           // Initialise all D Pins with 0
 
+      ADCSRA = 0b10001111;
+
       // Init Registers
-      ADCSRA |= (1<<ADPS2);
-//      ADMUX  |= (1<<REFS1);
       ADMUX  |= (1<<REFS0);
- //     ADCSRA = 0;
-      ADCSRA |= 1<<ADIE;
-      ADCSRA |= 1<<ADEN;
 
       sei();
 
-     ADCSRA |= 1<<ADSC;
+      ADCSRA |= 1<<ADSC;
     }
 
     int read() {
