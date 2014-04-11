@@ -122,6 +122,7 @@ ISR(ADC_vect) {
   temp_ADCL = ADCL;
   temp_ADCH = ADCH;
   out_msg.velocity =  (temp_ADCH << 8) | temp_ADCL;
+  out_msg.timestamp = avr_time_now();
   //bswap
   //out_msg.velocity = __builtin_bswap16(out_msg.velocity);
   switch (ADMUX) {
