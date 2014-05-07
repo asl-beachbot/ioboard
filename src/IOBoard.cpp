@@ -29,55 +29,67 @@ ros::Publisher io_board_out("io_from_board", &out_msg);
 // ros::Publisher io_board_info("io_info", &info_msg);
 
 uint8_t servoMaske = 0;
-
+uint8_t changedRakeBits = 0;
+uint8_t relais_flags = 0;
 bool cb(0);
 
 void ioboard_cb(const io_to_board& io)
 {
-  if ( (io.rake_flags | 0x80) != servoMaske)
+  // Shift bit 5 and 6 to bit 6 and 7, set bit 5 to 0 (because PD5 is not wired on Arduino micro)
+  changedRakeBits = io.rake_flags & 0x1F;
+  changedRakeBits |= ((io.rake_flags & 0x60) << 1);  
+
+  if (changedRakeBits != servoMaske)
   {
-    servoMaske = (io.rake_flags | 0x80);
+    servoMaske = changedRakeBits;
     cli();
 
-    PORTD |= 0x7F;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
+    PORTD |= 0xDF;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
     _delay_us(1200);
     PORTD &= servoMaske;                    // Die PWM-Ausgänge aller Servos, welche oben bleiben sollen, auf 0 setzen
     _delay_us(400);
-    PORTD &= 0x80;                          // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
+    PORTD &= 0x20;                          // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
     _delay_us(18400);
 
-    PORTD |= 0x7F;
+    PORTD |= 0xDF;
     _delay_us(1200);
     PORTD &= servoMaske;
     _delay_us(400);
-    PORTD &= 0x80;
+    PORTD &= 0x20;
     _delay_us(18400);
 
-    PORTD |= 0x7F;
+    PORTD |= 0xDF;
     _delay_us(1200);
     PORTD &= servoMaske;
     _delay_us(400);
-    PORTD &= 0x80;
+    PORTD &= 0x20;
     _delay_us(18400);
 
-    PORTD |= 0x7F; 
+    PORTD |= 0xDF; 
     _delay_us(1200);
     PORTD &= servoMaske;
     _delay_us(400);
-    PORTD &= 0x80;
+    PORTD &= 0x20;
 
     sei();
   }
 
 
+  // Neuer Code für Relais-Flags
+  relais_flags = (io.rake_flags & 0xF) << 1;		// io.rake_flags austauschen mit neuem Message-Byte speziell für Relais und Weiterem
+  PORTB |= relais_flags;
+  PORTB &= (relais_flags | 0xE1); 
+
+
   if ((io.status & 0x1) == 1)
   {
-    PORTD |= 0x80;
+    PORTB |= 0x1;
   }
   else
   {
-    PORTD &= 0x7F;
+    PORTD &= 0xFE;
   }
+
   
   if ((io.motor_left & 0xFF00) == 0x00)
   {
@@ -126,13 +138,13 @@ ISR(ADC_vect) {
   //bswap
   //out_msg.velocity = __builtin_bswap16(out_msg.velocity);
   switch (ADMUX) {
-    case 0x40:
-      ADMUX = 0x41;
+    case 0x0:
+      ADMUX = 0x1;
       out_msg.status = 0x02;
       break;
-    case 0x41:
+    case 0x1:
       out_msg.status = 0x03;
-      ADMUX = 0x40;
+      ADMUX = 0x0;
       break;
     default:
       break;
@@ -164,10 +176,12 @@ int main()
   {
     i++;
     // Send the message every second
-    if(avr_time_now() - lasttime > 2)
+	    PORTB |= 0x01;
+    if(avr_time_now() - lasttime > 1000)
     {
       io_board_out.publish(&out_msg);
 
+      servoMaske |= 0x20;
       // out_msg.motor_right = temp_output[0];
       // out_msg.motor_left  = temp_output[1];
 

@@ -17,7 +17,7 @@ class Atmega32u4Hardware {
       avr_time_init();
       USB_Init();
 
-      DDRB |= 0b01100000;     // Use B5-6 for 16-Bit PWM
+      DDRB = 0xFF;	     // Use all B Pins for output (B5-6 for 16-Bit PWM)
       ICR1 = 0xFFFF;
       TCCR1A = 0b10100000;
       TCCR1B = 0b00010001;
@@ -29,7 +29,7 @@ class Atmega32u4Hardware {
       ADCSRA = 0b10001111;
 
       // Init Registers
-      ADMUX  |= (1<<REFS0);
+      ADMUX  &= 0b00111111;
 
       sei();
 
