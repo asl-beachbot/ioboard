@@ -1,4 +1,9 @@
 uint16 motor_left
 uint16 motor_right
+uint16 stepper1
+uint16 stepper2
 uint8 rake_flags
-uint8 status
+uint8 status_motors
+uint8 status_pump
+uint8 status_charger
+uint8 status_additions

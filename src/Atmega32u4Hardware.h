@@ -17,22 +17,31 @@ class Atmega32u4Hardware {
       avr_time_init();
       USB_Init();
 
-      DDRB = 0xFF;	     // Use all B Pins for output (B5-6 for 16-Bit PWM)
-      ICR1 = 0xFFFF;
-      TCCR1A = 0b10100000;
-      TCCR1B = 0b00010001;
-      OCR1A = 0x8000;
+      DDRB |= 0xFF;	      // Use all B Pins for output (B56 PWM velocity, B7 PWM linear motor, B0 enable engines, B1-2 relays)
+      DDRD |= 0xFF;           // Use all D Pins for digital output (D0123467 rake)
+      DDRC |= 0b01000000;     // Use C6 for PWM linear motor
+
+      ICR3 |= 0xFFFF;         // 16-Bit PWM
+      ICR1 |= 0xFFFF;         // 16-Bit PWM
+
+      TCCR1A = 0b10101010;    // Use OC1A, OC1B, OC1C for Fast PWM
+      TCCR1B = 0b00011001;    // Fast PWM, no prescaling
+      TCCR3A = 0b10000010;    // Use OC3A for Fast PWM
+      TCCR3B = 0b00011001;    // Fast PWM, no prescaling
+
+      OCR1A = 0x8000;         // Initialise all PWM signals
       OCR1B = 0x8000;
-      DDRD = 0xFF;            // Use all D Pins for digital output
-      PORTD = 0x00;           // Initialise all D Pins with 0
+      OCR1C = 0x8000;
+      OCR3A = 0x8000;
 
-      ADCSRA = 0b10001111;
+      PORTD = 0x00;           // Initialise all Pins with 0
+      PORTB = 0x00;
+      PORTC = 0x00;
 
-      // Init Registers
-      ADMUX  &= 0b00111111;
+      ADCSRA = 0b10001111;    // Init ADC-Interrupts
+      ADMUX  = 0x0;
 
-      sei();
-
+      sei(); 
       ADCSRA |= 1<<ADSC;
     }
 
