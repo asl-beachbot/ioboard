@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>ioboard</name>
+  <name>bb_ioboard</name>
   <version>1.0.0</version>
   <description>Code for the ioboard</description>
 
