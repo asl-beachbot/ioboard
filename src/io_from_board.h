@@ -95,7 +95,7 @@ class io_from_board : public ros::Msg
     return offset;
   }
 
-  const char * getType(){ return "ioboard/IOFromBoard"; };
+  const char * getType(){ return "bb_ioboard/IOFromBoard"; };
   const char * getMD5(){ return "45bbdad0f6e3dfc7d7db5c507a72028d"; };
 
 };

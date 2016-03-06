@@ -47,151 +47,10 @@ void ioboard_cb(const io_to_board& io)
   // Store Time of last recieved message
   lastTimeMessage = avr_time_now();
 
-
-  // Position rake servos as desired by message
-  // Shift bit 5 and 6 to bit 6 and 7, set bit 5 to 0 (because PD5 is not wired on Arduino micro)
-  changedRakeBits = io.rake_flags & 0x1F;
-  changedRakeBits |= ((io.rake_flags & 0x60) << 1);  
-
-  if (changedRakeBits != servoMaske)
-  {
-    servoMaske = changedRakeBits & 0xDF;  
-    cli();
-
-    PORTD |= 0xDF;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
-    _delay_us(1114);
-    PORTD &= (servoMaske | 0b11111101);
-    _delay_us(41);
-    PORTD &= (servoMaske | 0b10111111);
-    _delay_us(8);
-    PORTD &= (servoMaske | 0b11111110);
-    _delay_us(22);
-    PORTD &= (servoMaske | 0b11110111);
-    _delay_us(12);
-    PORTD &= (servoMaske | 0b11111011);
-    _delay_us(7);
-    PORTD &= (servoMaske | 0b01111111);
-    _delay_us(18);
-    PORTD &= (servoMaske | 0b11101111);
-    _delay_us(436);                         // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
-    PORTD &= 0b11111101;
-    _delay_us(51);
-    PORTD &= 0b11111110;
-    _delay_us(11);
-    PORTD &= 0b10111111;
-    _delay_us(33);
-    PORTD &= 0b11110111;
-    _delay_us(1);
-    PORTD &= 0b11101111;
-    _delay_us(16);
-    PORTD &= 0b11111011;
-    _delay_us(4);
-    PORTD &= 0b01111111;
-    _delay_us(18226);
-
-    PORTD |= 0xDF;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
-    _delay_us(1114);
-    PORTD &= (servoMaske | 0b11111101);
-    _delay_us(41);
-    PORTD &= (servoMaske | 0b10111111);
-    _delay_us(8);
-    PORTD &= (servoMaske | 0b11111110);
-    _delay_us(22);
-    PORTD &= (servoMaske | 0b11110111);
-    _delay_us(12);
-    PORTD &= (servoMaske | 0b11111011);
-    _delay_us(7);
-    PORTD &= (servoMaske | 0b01111111);
-    _delay_us(18);
-    PORTD &= (servoMaske | 0b11101111);
-    _delay_us(436);                         // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
-    PORTD &= 0b11111101;
-    _delay_us(51);
-    PORTD &= 0b11111110;
-    _delay_us(11);
-    PORTD &= 0b10111111;
-    _delay_us(33);
-    PORTD &= 0b11110111;
-    _delay_us(1);
-    PORTD &= 0b11101111;
-    _delay_us(16);
-    PORTD &= 0b11111011;
-    _delay_us(4);
-    PORTD &= 0b01111111;
-    _delay_us(18226);
-
-    PORTD |= 0xDF;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
-    _delay_us(1114);
-    PORTD &= (servoMaske | 0b11111101);
-    _delay_us(41);
-    PORTD &= (servoMaske | 0b10111111);
-    _delay_us(8);
-    PORTD &= (servoMaske | 0b11111110);
-    _delay_us(22);
-    PORTD &= (servoMaske | 0b11110111);
-    _delay_us(12);
-    PORTD &= (servoMaske | 0b11111011);
-    _delay_us(7);
-    PORTD &= (servoMaske | 0b01111111);
-    _delay_us(18);
-    PORTD &= (servoMaske | 0b11101111);
-    _delay_us(436);                         // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
-    PORTD &= 0b11111101;
-    _delay_us(51);
-    PORTD &= 0b11111110;
-    _delay_us(11);
-    PORTD &= 0b10111111;
-    _delay_us(33);
-    PORTD &= 0b11110111;
-    _delay_us(1);
-    PORTD &= 0b11101111;
-    _delay_us(16);
-    PORTD &= 0b11111011;
-    _delay_us(4);
-    PORTD &= 0b01111111;
-    _delay_us(18226);
-
-    PORTD |= 0xDF;                          // Alle Servo-PWM-Ausgänge auf 1 setzen
-    _delay_us(1114);
-    PORTD &= (servoMaske | 0b11111101);
-    _delay_us(41);
-    PORTD &= (servoMaske | 0b10111111);
-    _delay_us(8);
-    PORTD &= (servoMaske | 0b11111110);
-    _delay_us(22);
-    PORTD &= (servoMaske | 0b11110111);
-    _delay_us(12);
-    PORTD &= (servoMaske | 0b11111011);
-    _delay_us(7);
-    PORTD &= (servoMaske | 0b01111111);
-    _delay_us(18);
-    PORTD &= (servoMaske | 0b11101111);
-    _delay_us(436);                         // Die PWM-Ausgänge aller Servos wieder auf 0 setzen
-    PORTD &= 0b11111101;
-    _delay_us(51);
-    PORTD &= 0b11111110;
-    _delay_us(11);
-    PORTD &= 0b10111111;
-    _delay_us(33);
-    PORTD &= 0b11110111;
-    _delay_us(1);
-    PORTD &= 0b11101111;
-    _delay_us(16);
-    PORTD &= 0b11111011;
-    _delay_us(4);
-    PORTD &= 0b01111111;
-    _delay_us(18226);
-
-    sei();
-  }
-
-
   // Set digital output pins B0, B1, B2 and B3 as desired by message
-  if ((io.status_charger & 0x1) == 1) { PORTB |= 0x2; } else { PORTB &= 0xFD; }
-  if ((io.status_pump & 0x1) == 1) { PORTB |= 0x4; } else { PORTB &= 0xFB; }
+  if ((io.status_charger   & 0x1) == 1) { PORTB |= 0x2; } else { PORTB &= 0xFD; }
   if ((io.status_additions & 0x1) == 1) { PORTB |= 0x8; } else { PORTB &= 0xF7; }
   if ((io.status_additions & 0x2) == 2) { PORTB |= 0x10; } else { PORTB &= 0xEF; } 
-
 
   // Enable/Disable engines as desired by message
   if ((io.status_motors & 0x1) == 1)
@@ -203,7 +62,6 @@ void ioboard_cb(const io_to_board& io)
   {
     PORTB &= 0xFE;
   }
-
   
   // Set PWM outputs for motor velocity as desired by message
   if(idleRight != 0 && idleLeft != 0)
@@ -236,15 +94,10 @@ void ioboard_cb(const io_to_board& io)
     }
   }
 
-
   // Schrittmotoren provisorisch
   OCR3A = io.motor_left;
   OCR1C = io.motor_right;
 }
-
-
-
-
 
 
 ISR(ADC_vect) {
@@ -328,88 +181,16 @@ int main()
   while(1)
   {
     // Stop engines and raise rake, if last recieved message is older then 2s
+    // %TODO raise rake
     if ((lastTimeMessage != 0) && (avr_time_now() - lastTimeMessage > 1000))
     { 
-      lastTimeMessage = 0;      
+      lastTimeMessage = 0;
 
       OCR1A = 0x8000;
       OCR1B = 0x8000;
-  
-      cli();
+    }
 
-      PORTD |= 0xDF;
-      _delay_us(1114);
-      PORTD &= 0b11111101;
-      _delay_us(41);
-      PORTD &= 0b10111111;
-      _delay_us(8);
-      PORTD &= 0b11111110;
-      _delay_us(22);
-      PORTD &= 0b11110111;
-      _delay_us(12);
-      PORTD &= 0b11111011;
-      _delay_us(7);
-      PORTD &= 0b01111111;
-      _delay_us(18);
-      PORTD &= 0b11101111;
-      _delay_us(18778);
-
-
-      PORTD |= 0xDF;                          
-      _delay_us(1114);
-      PORTD &= 0b11111101;
-      _delay_us(41);
-      PORTD &= 0b10111111;
-      _delay_us(8);
-      PORTD &= 0b11111110;
-      _delay_us(22);
-      PORTD &= 0b11110111;
-      _delay_us(12);
-      PORTD &= 0b11111011;
-      _delay_us(7);
-      PORTD &= 0b01111111;
-      _delay_us(18);
-      PORTD &= 0b11101111;
-      _delay_us(18778);
-
-      PORTD |= 0xDF;                          
-      _delay_us(1114);
-      PORTD &= 0b11111101;
-      _delay_us(41);
-      PORTD &= 0b10111111;
-      _delay_us(8);
-      PORTD &= 0b11111110;
-      _delay_us(22);
-      PORTD &= 0b11110111;
-      _delay_us(12);
-      PORTD &= 0b11111011;
-      _delay_us(7);
-      PORTD &= 0b01111111;
-      _delay_us(18);
-      PORTD &= 0b11101111;
-      _delay_us(18778);
-
-      PORTD |= 0xDF;                          
-      _delay_us(1114);
-      PORTD &= 0b11111101;
-      _delay_us(41);
-      PORTD &= 0b10111111;
-      _delay_us(8);
-      PORTD &= 0b11111110;
-      _delay_us(22);
-      PORTD &= 0b11110111;
-      _delay_us(12);
-      PORTD &= 0b11111011;
-      _delay_us(7);
-      PORTD &= 0b01111111;
-      _delay_us(18);
-      PORTD &= 0b11101111;
-      _delay_us(18778);
-
-      sei();
-  }
-
-
+    // Publish odometry all 40ms
     if (avr_time_now() - lastTimeOdometry > 40)
     {
       out_msg.timestamp = avr_time_now();
@@ -419,17 +200,8 @@ int main()
       lastTimeOdometry = avr_time_now();
     }
 
-
-    if (avr_time_now() - lastTimeRake > 600)
-    {
-      if (servoMaske != 0) { servoMaske |= 0x20; }
-      lastTimeRake = avr_time_now();
-    }
-
-
     nh.spinOnce();
 
-  
     // LUFA functions that need to be called frequently to keep USB alive
     CDC_Device_USBTask(&Atmega32u4Hardware::VirtualSerial_CDC_Interface);
     USB_USBTask();

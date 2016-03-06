@@ -11,11 +11,8 @@ class io_to_board : public ros::Msg
   public:
   uint16_t motor_left;
   uint16_t motor_right;
-  uint16_t stepper1;
-  uint16_t stepper2;
   uint8_t rake_flags;
   uint8_t status_motors;
-  uint8_t status_pump;
   uint8_t status_charger;
   uint8_t status_additions;
 
@@ -31,22 +28,11 @@ class io_to_board : public ros::Msg
     *(outbuffer + offset + 1) = (this->motor_right >> (8 * 1)) & 0xFF;
     offset += sizeof(this->motor_right);
 
-    *(outbuffer + offset + 0) = (this->stepper1 >> (8 * 0)) & 0xFF;
-    *(outbuffer + offset + 1) = (this->stepper1 >> (8 * 1)) & 0xFF;
-    offset += sizeof(this->stepper1);
-
-    *(outbuffer + offset + 0) = (this->stepper2 >> (8 * 0)) & 0xFF;
-    *(outbuffer + offset + 1) = (this->stepper2 >> (8 * 1)) & 0xFF;
-    offset += sizeof(this->stepper2);
-
     *(outbuffer + offset + 0) = (this->rake_flags >> (8 * 0)) & 0xFF;
     offset += sizeof(this->rake_flags);
 
     *(outbuffer + offset + 0) = (this->status_motors >> (8 * 0)) & 0xFF;
     offset += sizeof(this->status_motors);
-
-    *(outbuffer + offset + 0) = (this->status_pump >> (8 * 0)) & 0xFF;
-    offset += sizeof(this->status_pump);
 
     *(outbuffer + offset + 0) = (this->status_charger >> (8 * 0)) & 0xFF;
     offset += sizeof(this->status_charger);
@@ -69,22 +55,11 @@ class io_to_board : public ros::Msg
     this->motor_right |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
     offset += sizeof(this->motor_right);
 
-    this->stepper1 =  ((uint16_t) (*(inbuffer + offset)));
-    this->stepper1 |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-    offset += sizeof(this->stepper1);
-
-    this->stepper2 =  ((uint16_t) (*(inbuffer + offset)));
-    this->stepper2 |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-    offset += sizeof(this->stepper2);
-
     this->rake_flags =  ((uint8_t) (*(inbuffer + offset)));
     offset += sizeof(this->rake_flags);
 
     this->status_motors =  ((uint8_t) (*(inbuffer + offset)));
     offset += sizeof(this->status_motors);
-
-    this->status_pump =  ((uint8_t) (*(inbuffer + offset)));
-    offset += sizeof(this->status_pump);
 
     this->status_charger =  ((uint8_t) (*(inbuffer + offset)));
     offset += sizeof(this->status_charger);
@@ -95,7 +70,7 @@ class io_to_board : public ros::Msg
     return offset;
   }
 
-  const char * getType(){ return "ioboard/IOToBoard"; };
+  const char * getType(){ return "bb_ioboard/IOToBoard"; };
   const char * getMD5(){ return "7104e974ba58b650fabddf7e1b2fc6e7"; };
 
 };
