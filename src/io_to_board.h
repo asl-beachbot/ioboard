@@ -71,7 +71,7 @@ class io_to_board : public ros::Msg
   }
 
   const char * getType(){ return "bb_ioboard/IOToBoard"; };
-  const char * getMD5(){ return "7104e974ba58b650fabddf7e1b2fc6e7"; };
+  const char * getMD5(){ return "4d68e282984326acbe6a6d35fb1c8b97"; };
 
 };
 #endif
