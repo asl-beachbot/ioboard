@@ -176,6 +176,28 @@ int main()
   ros::Subscriber<io_to_board> sub("to_ioboard", &ioboard_cb);
   nh.subscribe(sub);
 
+// [18:26, 4/8/2016] Jonathan Huber: Pin 3 für PWM
+// [18:26, 4/8/2016] Jonathan Huber: Pin 5 für PWM
+// [18:26, 4/8/2016] Jonathan Huber: und zuletzt pin 0(RX) für die error flag
+// [18:26, 4/8/2016] Jonathan Huber: Also ich habe mir mal folgendes aufgeschrieben:
+// digital für buttons: 6,7,8,11,12
+
+  // Ports for Rake v2:
+  // Input from buttons:
+  // (PC6) PD4 PD7 PE6 PB7 PD6
+  // PWM
+  // OC0B, OC4A
+
+  // PORTXN = 1 -> Pullup Resistor activated
+  // DDXN = 0 -> configured as INPUT pin (logic 1 -> output)
+
+  PORTD = (1 << PD4) | (1 << PD6) | (1 << PD7);
+  PORTE = (1 << PE6);
+  
+  DDRD = (1 << DDD4) | (1 << DDD6) | (1 << DDD7);
+  DDRE = (1 << DDE6);
+
+
 
   // Do timed/repeated stuff
   uint32_t lastTimeOdometry = 0UL;
