@@ -49,8 +49,6 @@ void ioboard_cb(const io_to_board& io)
 
   // Set digital output pins B0, B1, B2 and B3 as desired by message
   if ((io.status_charger   & 0x1) == 1) { PORTB |= 0x2; } else { PORTB &= 0xFD; }
-  if ((io.status_additions & 0x1) == 1) { PORTB |= 0x8; } else { PORTB &= 0xF7; }
-  if ((io.status_additions & 0x2) == 2) { PORTB |= 0x10; } else { PORTB &= 0xEF; } 
 
   // Enable/Disable engines as desired by message
   if ((io.status_motors & 0x1) == 1)
@@ -72,6 +70,7 @@ void ioboard_cb(const io_to_board& io)
     }
     else if ((io.motor_left & 0xFF00) == 0xFF00)
     {
+
       OCR1A = 0xFF00;
     }
       else
@@ -92,11 +91,9 @@ void ioboard_cb(const io_to_board& io)
     {
       OCR1B = io.motor_right;
     }
-  }
 
-  // Schrittmotoren provisorisch
-  OCR3A = io.motor_left;
-  OCR1C = io.motor_right;
+  }
+  nh.loginfo("Setting values");
 }
 
 
@@ -157,7 +154,12 @@ ISR(ADC_vect) {
 }
 
 
-
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif 
 
 int main()
 {
@@ -178,6 +180,22 @@ int main()
   // Do timed/repeated stuff
   uint32_t lastTimeOdometry = 0UL;
   uint32_t lastTimeRake = 0UL;
+  // PC 7 as output pin
+  sbi(DDRC, PC7);
+  // sbi(TCCR4B, CS42);    // set timer4 prescale factor to 64
+  sbi(TCCR4B, CS41);
+  sbi(TCCR4B, CS40);
+  sbi(TCCR4D, WGM40);   // put timer 4 in phase- and frequency-correct PWM mode 
+  sbi(TCCR4A, PWM4A);   // enable PWM mode for comparator OCR4A
+  sbi(TCCR4A, COM4A1);   // enable PWM mode for comparator OCR4A
+  sbi(TCCR4C, PWM4D);   // enable PWM mode for comparator OCR4D
+  // sbi(TCCR4A, COM4A1);
+  // sbi(TCCR4A, PWM4A);
+  // TCCR4A = (1 << COM4A1) | (0 << COM4A0) | (1 << FOC4A) | (1 << PWM4A);
+  OCR4C = 40;
+  OCR4A = 0;
+  unsigned char a = 0;
+
   while(1)
   {
     // Stop engines and raise rake, if last recieved message is older then 2s
@@ -193,12 +211,34 @@ int main()
     // Publish odometry all 40ms
     if (avr_time_now() - lastTimeOdometry > 40)
     {
+      // set D6 to input
       out_msg.timestamp = avr_time_now();
       io_board_out.publish(&out_msg);
       out_msg.deltaUmLeft = 0;
       out_msg.deltaUmRight = 0;      
       lastTimeOdometry = avr_time_now();
+      a++;
+      if(a > 40) {
+        a = 0;
+      }
+      OCR4A = a;
     }
+
+
+    // Turn on TX LED
+    DDRB |= (1 << DDB0);
+
+    DDRD |= (0 << PD7);
+    // Activate pull up resistor
+    PORTD |= (1 << PD7);
+    unsigned char i;
+    i = PIND;
+    if(i & (1 << PD7)) {
+      PORTB |= (1 << PB0);
+    } else {
+      PORTB &= (0 << PB0);
+    }
+
 
     nh.spinOnce();
 
